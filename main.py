@@ -10,11 +10,9 @@ import os
 from typing import List
 
 
-user_list = []
-
-
 class User:
-    def __init__(self, username, password, role):
+    def __init__(self, name, username, password, role):
+        self.name = name
         self.username = username
         self.password = password
         self.role = role
@@ -22,6 +20,16 @@ class User:
     # Buat user. Hanya input-input beserta validasinya.
     @staticmethod
     def input_user(admin=False):
+        while True:
+            nama = input("Nama: ")
+            # Validasi nama ga boleh kosong.
+            if nama == "":
+                print("Nama tidak boleh kosong.")
+                Utils.clear_and_continue()
+                continue
+
+            break
+
         while True:
             username = input("Username: ")
             # Validasi username ga boleh kosong.
@@ -76,7 +84,7 @@ class User:
 
                 break
 
-        return User(username, password, role)
+        return User(nama, username, password, role)
 
     @staticmethod
     def create_user():
@@ -92,7 +100,7 @@ class User:
     def list_user():
         print("Daftar User: ")
         for i, user in enumerate(user_list):
-            print(f"{i + 1}. {user.username} - {user.role}")
+            print(f"{i + 1}. {user.name} - {user.username} - {user.role}")
 
         Utils.clear_and_continue()
 
@@ -100,9 +108,11 @@ class User:
     @staticmethod
     def save_to_file():
         with open("users.tsv", "w") as file:
-            file.write("username\tpassword\trole\n")
+            file.write("nama\tusername\tpassword\trole\n")
             for user in user_list:
-                file.write(f"{user.username}\t{user.password}\t{user.role}\n")
+                file.write(
+                    f"{user.name}\t{user.username}\t{user.password}\t{user.role}\n"
+                )
 
     # Ambil user dari tsv.
     @staticmethod
@@ -110,8 +120,95 @@ class User:
         with open("users.tsv", "r") as file:
             lines = file.readlines()
             for line in lines[1:]:
-                username, password, role = line.strip().split("\t")
-                user_list.append(User(username, password, role))
+                name, username, password, role = line.strip().split("\t")
+                user = User(name, username, password, role)
+                user_list.append(user)
+
+    @staticmethod
+    def login():
+        username = input("Username: ")
+        password = input("Password: ")
+
+        # Cek apakah username dan password ada di user_list.
+        user = next((user for user in user_list if user.username == username), None)
+
+        if user is not None and user.password == password:
+            print("Login berhasil.")
+            Utils.clear_and_continue()
+
+            return user
+        else:
+            print("Username atau password salah.")
+            Utils.clear_and_continue()
+
+        return None
+
+    @staticmethod
+    def menu():
+        while True:
+            Utils.clear()
+            print("Menu User")
+            print("[0] Kembali")
+            print("[1] Katalog Produk")
+
+            choice = input("Pilihan: ")
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                pass
+
+
+class Admin(User):
+    def __init__(self, name, username, password, role):
+        super().__init__(name, username, password, role)
+
+    @staticmethod
+    def menu():
+        while True:
+            Utils.clear()
+            print("Menu Admin")
+            print("[0] Kembali")
+            print("[1] Tambah User")
+            print("[2] Lihat User")
+            print("[3] Tambah Produk")
+            print("[4] Lihat Produk")
+
+            choice = input("Pilihan: ")
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                User.create_user()
+            elif choice == "2":
+                User.list_user()
+            elif choice == "3":
+                Product.create_product()
+            elif choice == "4":
+                Product.list_product()
+
+
+class Doctor(User):
+    def __init__(self, name, username, password, role):
+        super().__init__(name, username, password, role)
+
+    @staticmethod
+    def menu():
+        while True:
+            Utils.clear()
+            print("Menu Dokter")
+            print("[0] Kembali")
+            print("[1] Lihat User")
+            print("[2] Lihat Produk")
+
+            choice = input("Pilihan: ")
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                User.list_user()
+            elif choice == "2":
+                Product.list_product()
 
 
 # Utility class.
@@ -290,4 +387,36 @@ class Product:
                 )
 
 
+user_list: List[User] = []
 product_list: List[Product] = []
+
+Product.load_from_file()
+User.load_from_file()
+
+while True:
+    print("Selamat datang di Pet Shop!")
+    print("[0] Keluar dari aplikasi")
+    print("[1] Login")
+    print("[2] Daftar")
+    print("[3] Lupa Password")
+
+    choice = input("Pilihan: ")
+
+    if choice == "0":
+        break
+    elif choice == "1":
+        current_user = User.login()
+        if current_user is None:
+            continue
+
+        if current_user.role == "admin":
+            Admin.menu()
+        elif current_user.role == "doctor":
+            Doctor.menu()
+        else:
+            User.menu()
+
+    elif choice == "2":
+        User.create_user()
+
+    Utils.clear()
