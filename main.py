@@ -258,7 +258,15 @@ class User:
             Utils.enter_and_continue()
             return
 
-        new_password = input("Password baru: ")
+        while True:
+            new_password = input("Password baru: ")
+            if new_password == "":
+                print("Password tidak boleh kosong.")
+                Utils.enter_and_continue()
+                continue
+
+            break
+
         user.password = new_password
 
         print("Password berhasil diubah.")
