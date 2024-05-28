@@ -177,6 +177,11 @@ class User:
             Utils.clear_and_continue()
             return
 
+        if user.role == "admin":
+            print("Tidak bisa reset password admin.")
+            Utils.clear_and_continue()
+            return
+
         new_password = input("Password baru: ")
         user.password = new_password
 
