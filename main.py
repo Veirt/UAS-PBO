@@ -16,6 +16,79 @@ class User:
         self.username = username
         self.password = password
         self.role = role
+        self._shopping_cart = []
+
+    def get_shopping_cart_total(self):
+        total = 0
+        for product, amount in self._shopping_cart:
+            total += product.price * amount
+
+        return total
+
+    # Lihat isi keranjang belanja.
+    def get_shopping_cart_items(self, interactive=False):
+        if len(self._shopping_cart) == 0:
+            if interactive:
+                print("Keranjang belanja kosong.")
+                Utils.enter_and_continue()
+
+            return
+
+        print("Keranjang Belanja: ")
+        for product, amount in self._shopping_cart:
+            print(
+                f"* {product.name} - {product.get_price_formatted()} - Jumlah: {amount}"
+            )
+
+        print()
+        print(f"Total: {Utils.format_rupiah(self.get_shopping_cart_total())}")
+
+        print()
+
+        if interactive:
+            Utils.enter_and_continue()
+
+    def add_to_shopping_cart(self, product, amount):
+        # Cek apakah produk sudah ada di keranjang.
+        for i, (p, a) in enumerate(self._shopping_cart):
+            if p is product:
+                self._shopping_cart[i] = (p, amount)
+                print("Jumlah produk berhasil diubah.")
+                break
+        else:
+            self._shopping_cart.append((product, amount))
+            print("Produk berhasil ditambahkan ke keranjang.")
+
+    def remove_from_shopping_cart(self):
+        if len(self._shopping_cart) == 0:
+            print("Keranjang belanja kosong.")
+            Utils.enter_and_continue()
+            return
+
+        print("[0] Kembali")
+        for i, (p, a) in enumerate(self._shopping_cart):
+            print(f"[{i + 1}] {p.name} - {p.get_price_formatted()} - Jumlah: {a}")
+
+        choice = input("Pilihan: ")
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            self._shopping_cart.pop(index)
+            print("Produk berhasil dihapus dari keranjang.")
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+
+        Utils.enter_and_continue()
+
+    def checkout(self):
+        for product, amount in self._shopping_cart:
+            product.decrease_stock(amount)
+
+        Product.save_to_file()
+        self._shopping_cart = []
 
     # Buat user. Hanya input-input beserta validasinya.
     @staticmethod
@@ -25,7 +98,7 @@ class User:
             # Validasi nama ga boleh kosong.
             if nama == "":
                 print("Nama tidak boleh kosong.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             break
@@ -35,13 +108,13 @@ class User:
             # Validasi username ga boleh kosong.
             if username == "":
                 print("Username tidak boleh kosong.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             # Validasi username harus unik.
             if any(user.username == username for user in user_list):
                 print("Username sudah ada.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             break
@@ -51,7 +124,7 @@ class User:
             # Validasi password ga boleh kosong.
             if password == "":
                 print("Password tidak boleh kosong.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             break
@@ -72,12 +145,12 @@ class User:
                 # Validasi role ga boleh kosong.
                 if role == "":
                     print("Role tidak boleh kosong.")
-                    Utils.clear_and_continue()
+                    Utils.enter_and_continue()
                     continue
 
                 if role not in role_dict.keys():
                     print("Role tidak valid.")
-                    Utils.clear_and_continue()
+                    Utils.enter_and_continue()
                     continue
 
                 role = role_dict[role]
@@ -94,7 +167,7 @@ class User:
         print("User berhasil ditambahkan.")
 
         User.save_to_file()
-        Utils.clear_and_continue()
+        Utils.enter_and_continue()
 
     @staticmethod
     def list_user():
@@ -102,7 +175,7 @@ class User:
         for i, user in enumerate(user_list):
             print(f"{i + 1}. {user.name} - {user.username} - {user.role}")
 
-        Utils.clear_and_continue()
+        Utils.enter_and_continue()
 
     # Simpan user ke tsv.
     @staticmethod
@@ -134,29 +207,32 @@ class User:
 
         if user is not None and user.password == password:
             print("Login berhasil.")
-            Utils.clear_and_continue()
+            Utils.enter_and_continue()
 
             return user
 
         print("Username atau password salah.")
-        Utils.clear_and_continue()
+        Utils.enter_and_continue()
 
         return None
 
     @staticmethod
-    def menu():
+    def menu(current_user):
         while True:
             Utils.clear()
             print("Menu User")
             print("[0] Kembali")
-            print("[1] Katalog Produk")
+            print("[1] Toko / Belanja")
 
             choice = input("Pilihan: ")
 
             if choice == "0":
                 break
             elif choice == "1":
-                pass
+                Shop.menu(current_user)
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
 
     @staticmethod
     def forgot_password():
@@ -174,21 +250,24 @@ class User:
 
         if user is None:
             print("Username atau nama salah.")
-            Utils.clear_and_continue()
+            Utils.enter_and_continue()
             return
 
         if user.role == "admin":
             print("Tidak bisa reset password admin.")
-            Utils.clear_and_continue()
+            Utils.enter_and_continue()
             return
 
         new_password = input("Password baru: ")
         user.password = new_password
 
         print("Password berhasil diubah.")
-        Utils.clear_and_continue()
+        Utils.enter_and_continue()
 
         User.save_to_file()
+
+
+current_user: User | None = None
 
 
 class Admin(User):
@@ -196,7 +275,7 @@ class Admin(User):
         super().__init__(name, username, password, role)
 
     @staticmethod
-    def menu():
+    def menu(current_user):
         while True:
             Utils.clear()
             print("Menu Admin")
@@ -225,7 +304,7 @@ class Doctor(User):
         super().__init__(name, username, password, role)
 
     @staticmethod
-    def menu():
+    def menu(current_user):
         while True:
             Utils.clear()
             print("Menu Dokter")
@@ -254,7 +333,7 @@ class Utils:
             os.system("clear")
 
     @staticmethod
-    def clear_and_continue():
+    def enter_and_continue():
         input("Press Enter to continue...")
         Utils.clear()
 
@@ -286,7 +365,7 @@ class Product:
     def decrease_stock(self, amount):
         if self._stock < amount:
             print("Stok tidak cukup.")
-            Utils.clear_and_continue()
+            Utils.enter_and_continue()
             return False
 
         self._stock -= amount
@@ -297,7 +376,7 @@ class Product:
     def set_stock(self, amount):
         if amount < 0:
             print("Stok tidak boleh negatif.")
-            Utils.clear_and_continue()
+            Utils.enter_and_continue()
             return False
 
         self._stock = amount
@@ -310,13 +389,13 @@ class Product:
             # Validasi nama produk ga boleh kosong.
             if name == "":
                 print("Nama produk tidak boleh kosong.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             # Validasi nama produk harus unik.
             if any(product.name == name for product in product_list):
                 print("Nama produk sudah ada.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             break
@@ -326,7 +405,7 @@ class Product:
             # Validasi harga produk harus angka valid.
             if not price.isdigit():
                 print("Harga produk harus angka yang valid.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             price = int(price)
@@ -338,7 +417,7 @@ class Product:
             # Validasi stok produk harus angka.
             if not stock.isdigit():
                 print("Stok produk harus angka yang valid.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             stock = int(stock)
@@ -363,12 +442,12 @@ class Product:
             # Validasi kategori produk ga boleh kosong.
             if category == "":
                 print("Kategori produk tidak boleh kosong.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             if category not in category_dict.keys():
                 print("Kategori produk tidak valid.")
-                Utils.clear_and_continue()
+                Utils.enter_and_continue()
                 continue
 
             category = category_dict[category]
@@ -385,7 +464,7 @@ class Product:
         print("Produk berhasil ditambahkan.")
 
         Product.save_to_file()
-        Utils.clear_and_continue()
+        Utils.enter_and_continue()
 
     @staticmethod
     def list_product():
@@ -395,7 +474,7 @@ class Product:
                 f"{i + 1}. {product.name} - {product.get_price_formatted()} - {product.get_stock()} - {product.category}"
             )
 
-        Utils.clear_and_continue()
+        Utils.enter_and_continue()
 
     # Simpan produk dari tsv.
     @staticmethod
@@ -417,6 +496,136 @@ class Product:
                 product_list.append(
                     Product(name, int(price), int(stock), category.title())
                 )
+
+
+class Shop:
+    categories = ["Hewan", "Makanan", "Mainan", "Aksesoris", "Lainnya"]
+
+    @staticmethod
+    def print_categories():
+        print("[0] Kembali")
+        for i, category in enumerate(Shop.categories):
+            print(f"[{i + 1}] {category}")
+
+        return Shop.categories
+
+    @staticmethod
+    def list_product_by_category(category):
+        Utils.clear()
+        print("[0] Kembali")
+
+        # Print produk sesuai kategori.
+        result = [product for product in product_list if product.category == category]
+
+        for i, product in enumerate(result):
+            print(
+                f"[{i + 1}] {product.name} - {product.get_price_formatted()} - Stok: {product.get_stock()}"
+            )
+
+        return result
+
+    @staticmethod
+    def catalogue(current_user):
+        while True:
+            try:
+                Utils.clear()
+                current_user.get_shopping_cart_items()
+                categories = Shop.print_categories()
+                choice = input("Pilihan: ")
+
+                if choice == "0":
+                    break
+
+                category = categories[int(choice) - 1]
+            except (ValueError, IndexError):
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
+                continue
+
+            while True:
+                Utils.clear()
+                products = Shop.list_product_by_category(category)
+
+                choice = input("Pilihan: ")
+
+                if choice == "0":
+                    break
+
+                Utils.clear()
+                try:
+                    product = products[int(choice) - 1]
+                    while True:
+                        print("Produk yang dipilih: ")
+                        print(f"Nama: {product.name}")
+                        print(f"Harga: {product.get_price_formatted()}")
+                        print(f"Stok: {product.get_stock()}")
+                        print()
+
+                        amount = input("Jumlah: ")
+
+                        if not amount.isdigit():
+                            print("Jumlah harus angka.")
+                            Utils.enter_and_continue()
+                            continue
+
+                        if product.get_stock() < int(amount):
+                            print("Stok tidak cukup.")
+                            Utils.enter_and_continue()
+                            continue
+
+                        if int(amount) <= 0:
+                            print("Jumlah harus lebih dari 0.")
+                            Utils.enter_and_continue()
+                            continue
+
+                        amount = int(amount)
+                        break
+
+                    current_user.add_to_shopping_cart(product, amount)
+
+                    Utils.enter_and_continue()
+
+                except (ValueError, IndexError):
+                    print("Pilihan tidak valid.")
+                    Utils.enter_and_continue()
+                    continue
+
+    @staticmethod
+    def menu(current_user: User):
+        while True:
+            Utils.clear()
+            print("Menu Toko")
+            print("[0] Kembali")
+            print("[1] Lihat Keranjang Belanja")
+            print("[2] Hapus Item dari Keranjang Belanja")
+            print("[3] Katalog Toko")
+            if current_user.get_shopping_cart_total() > 0:
+                print("[4] Checkout")
+
+            choice = input("Pilihan: ")
+            Utils.clear()
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                current_user.get_shopping_cart_items(interactive=True)
+            elif choice == "2":
+                current_user.remove_from_shopping_cart()
+            elif choice == "3":
+                Shop.catalogue(current_user)
+            elif choice == "4":
+                # Validasi belanjaan harus lebih dari 0.
+                if current_user.get_shopping_cart_total() == 0:
+                    print("Keranjang belanja kosong.")
+                    Utils.enter_and_continue()
+                    continue
+
+                current_user.checkout()
+                print("Terima kasih telah berbelanja!")
+                Utils.enter_and_continue()
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
 
 
 user_list: List[User] = []
@@ -442,16 +651,19 @@ while True:
             continue
 
         if current_user.role == "admin":
-            Admin.menu()
+            Admin.menu(current_user)
         elif current_user.role == "doctor":
-            Doctor.menu()
+            Doctor.menu(current_user)
         else:
-            User.menu()
+            User.menu(current_user)
 
     elif choice == "2":
         User.create_user()
 
     elif choice == "3":
         User.forgot_password()
-
+    else:
+        print()
+        print("Pilihan tidak valid.")
+        Utils.enter_and_continue()
     Utils.clear()
