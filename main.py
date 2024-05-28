@@ -10,8 +10,108 @@ import os
 from typing import List
 
 
+user_list = []
+
+
 class User:
-    pass
+    def __init__(self, username, password, role):
+        self.username = username
+        self.password = password
+        self.role = role
+
+    # Buat user. Hanya input-input beserta validasinya.
+    @staticmethod
+    def input_user(admin=False):
+        while True:
+            username = input("Username: ")
+            # Validasi username ga boleh kosong.
+            if username == "":
+                print("Username tidak boleh kosong.")
+                Utils.clear_and_continue()
+                continue
+
+            # Validasi username harus unik.
+            if any(user.username == username for user in user_list):
+                print("Username sudah ada.")
+                Utils.clear_and_continue()
+                continue
+
+            break
+
+        while True:
+            password = input("Password: ")
+            # Validasi password ga boleh kosong.
+            if password == "":
+                print("Password tidak boleh kosong.")
+                Utils.clear_and_continue()
+                continue
+
+            break
+
+        # Default role adalah user.
+        role = "user"
+
+        # Jika admin, maka bisa pilih role.
+        if admin:
+            while True:
+                role_dict = {"1": "user", "2": "admin", "3": "doctor"}
+                print("Role: ")
+                print("[1] User")
+                print("[2] Admin")
+                print("[3] Doctor")
+                role = input("Role: ")
+
+                # Validasi role ga boleh kosong.
+                if role == "":
+                    print("Role tidak boleh kosong.")
+                    Utils.clear_and_continue()
+                    continue
+
+                if role not in role_dict.keys():
+                    print("Role tidak valid.")
+                    Utils.clear_and_continue()
+                    continue
+
+                role = role_dict[role]
+
+                break
+
+        return User(username, password, role)
+
+    @staticmethod
+    def create_user():
+        user = User.input_user()
+        user_list.append(user)
+
+        print("User berhasil ditambahkan.")
+
+        User.save_to_file()
+        Utils.clear_and_continue()
+
+    @staticmethod
+    def list_user():
+        print("Daftar User: ")
+        for i, user in enumerate(user_list):
+            print(f"{i + 1}. {user.username} - {user.role}")
+
+        Utils.clear_and_continue()
+
+    # Simpan user ke tsv.
+    @staticmethod
+    def save_to_file():
+        with open("users.tsv", "w") as file:
+            file.write("username\tpassword\trole\n")
+            for user in user_list:
+                file.write(f"{user.username}\t{user.password}\t{user.role}\n")
+
+    # Ambil user dari tsv.
+    @staticmethod
+    def load_from_file():
+        with open("users.tsv", "r") as file:
+            lines = file.readlines()
+            for line in lines[1:]:
+                username, password, role = line.strip().split("\t")
+                user_list.append(User(username, password, role))
 
 
 # Utility class.
@@ -168,7 +268,7 @@ class Product:
 
         Utils.clear_and_continue()
 
-    # Ambil produk dari tsv.
+    # Simpan produk dari tsv.
     @staticmethod
     def save_to_file():
         with open("products.tsv", "w") as file:
@@ -178,7 +278,7 @@ class Product:
                     f"{product.name}\t{product.price}\t{product.get_stock()}\t{product.category}\n"
                 )
 
-    # Simpan produk ke tsv.
+    # Ambil produk dari tsv.
     @staticmethod
     def load_from_file():
         with open("products.tsv", "r") as file:
@@ -191,6 +291,3 @@ class Product:
 
 
 product_list: List[Product] = []
-
-Product.load_from_file()
-Product.list_product()
