@@ -137,9 +137,9 @@ class User:
             Utils.clear_and_continue()
 
             return user
-        else:
-            print("Username atau password salah.")
-            Utils.clear_and_continue()
+
+        print("Username atau password salah.")
+        Utils.clear_and_continue()
 
         return None
 
@@ -157,6 +157,33 @@ class User:
                 break
             elif choice == "1":
                 pass
+
+    @staticmethod
+    def forgot_password():
+        username = input("Username: ")
+        name = input("Nama: ")
+        # Cari user berdasarkan username dan name.
+        user = next(
+            (
+                user
+                for user in user_list
+                if user.username == username and user.name == name
+            ),
+            None,
+        )
+
+        if user is None:
+            print("Username atau nama salah.")
+            Utils.clear_and_continue()
+            return
+
+        new_password = input("Password baru: ")
+        user.password = new_password
+
+        print("Password berhasil diubah.")
+        Utils.clear_and_continue()
+
+        User.save_to_file()
 
 
 class Admin(User):
@@ -418,5 +445,8 @@ while True:
 
     elif choice == "2":
         User.create_user()
+
+    elif choice == "3":
+        User.forgot_password()
 
     Utils.clear()
