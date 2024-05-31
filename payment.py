@@ -1,11 +1,11 @@
-from tkinter import Tk, Label, Frame
+from tkinter import Tk, Label, Frame, Toplevel
 from PIL import Image, ImageTk
 from utils import Utils
 
 
 class Payment:
     @staticmethod
-    def payment_method():
+    def select_method():
         while True:
             print("Pilih metode pembayaran:")
             print("[1] Transfer")
@@ -49,7 +49,7 @@ class Payment:
 
     @staticmethod
     def show_qr_code():
-        root = Tk()
+        root = Toplevel()
         root.title("QRIS")
 
         frame = Frame(root)
@@ -57,10 +57,7 @@ class Payment:
 
         qr_code_image = Image.open("assets/qr.png")
         qr_code_photo = ImageTk.PhotoImage(qr_code_image)
-        qr_code_label = Label(frame, image=qr_code_photo)
-        qr_code_label.image = (
-            qr_code_photo  # Keep a reference to prevent garbage collection
-        )
+        qr_code_label = Label(frame, image=qr_code_photo)  # type: ignore
         qr_code_label.pack()
 
         def on_closing():

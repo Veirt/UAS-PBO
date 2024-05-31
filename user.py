@@ -8,6 +8,7 @@ Doctor: dokter (mengecek pelayanan)
 """
 
 from typing import List
+from payment import Payment
 from utils import Utils
 from product import Product
 from shop import Shop
@@ -91,6 +92,8 @@ class User:
         Utils.enter_and_continue()
 
     def checkout(self):
+        Payment.select_method()
+
         for product, amount in self._shopping_cart:
             product.decrease_stock(amount)
 

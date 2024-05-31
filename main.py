@@ -11,12 +11,7 @@ from user import User, Admin, Doctor
 from pet import Pet
 from product import Product
 
-
 current_user: User | None = None
-
-from payment import Payment
-
-Payment.payment_method()
 
 Product.load_from_file()
 User.load_from_file()
