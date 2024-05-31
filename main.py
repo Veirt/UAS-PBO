@@ -8,13 +8,19 @@ Mirip dengan CSV, tapi menggunakan tab sebagai pemisah. Memudahkan karena nama p
 
 from utils import Utils
 from user import User, Admin, Doctor
+from pet import Pet
 from product import Product
 
 
 current_user: User | None = None
 
+from payment import Payment
+
+Payment.payment_method()
+
 Product.load_from_file()
 User.load_from_file()
+Pet.load_from_file()
 
 while True:
     print("Selamat datang di Pet Shop!")

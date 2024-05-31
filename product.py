@@ -80,18 +80,16 @@ class Product:
 
         while True:
             category_dict = {
-                "1": "hewan",
-                "2": "makanan",
-                "3": "mainan",
-                "4": "aksesoris",
-                "5": "lainnya",
+                "1": "makanan",
+                "2": "mainan",
+                "3": "aksesoris",
+                "4": "lainnya",
             }
             print("Kategori Produk: ")
-            print("[1] Hewan")
-            print("[2] Makanan")
-            print("[3] Mainan")
-            print("[4] Aksesoris (Kalung, Pakaian, dll.)")
-            print("[5] Lainnya")
+            print("[1] Makanan")
+            print("[2] Mainan")
+            print("[3] Aksesoris (Kalung, Pakaian, dll.)")
+            print("[4] Lainnya")
             category = input("Kategori produk: ")
             # Validasi kategori produk ga boleh kosong.
             if category == "":

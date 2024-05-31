@@ -3,7 +3,7 @@ from product import product_list
 
 
 class Shop:
-    categories = ["Hewan", "Makanan", "Mainan", "Aksesoris", "Lainnya"]
+    categories = ["Makanan", "Mainan", "Aksesoris", "Lainnya"]
 
     @staticmethod
     def print_categories():

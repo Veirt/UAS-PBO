@@ -12,6 +12,7 @@ from utils import Utils
 from product import Product
 from shop import Shop
 from service import Service
+from pet import Pet
 
 import pwinput
 
@@ -240,6 +241,8 @@ class User:
                 Shop.menu(current_user)
             elif choice == "2":
                 Service.menu(current_user)
+            elif choice == "3":
+                Pet.adoption_menu(current_user)
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
@@ -299,6 +302,8 @@ class Admin(User):
             print("[2] Lihat User")
             print("[3] Tambah Produk")
             print("[4] Lihat Produk")
+            print("[5] Tambah Hewan Adopsi")
+            print("[6] Lihat Hewan Adopsi")
 
             choice = input("Pilihan: ")
 
@@ -312,6 +317,11 @@ class Admin(User):
                 Product.create_product()
             elif choice == "4":
                 Product.list_product()
+            elif choice == "5":
+                Pet.create_pet()
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
 
 
 class Doctor(User):

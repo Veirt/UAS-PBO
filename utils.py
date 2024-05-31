@@ -1,3 +1,4 @@
+from PIL import Image
 import os
 
 
@@ -25,3 +26,9 @@ class Utils:
         )
 
         return f"Rp. {formatted_amount}"
+
+    # Tampilkan gambar hewan peliharaan di window baru
+    @staticmethod
+    def show_image(image_path):
+        img = Image.open(image_path)
+        img.show()
