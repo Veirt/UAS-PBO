@@ -13,6 +13,8 @@ from product import Product
 from shop import Shop
 from service import Service
 
+import pwinput
+
 
 class User:
     def __init__(self, name, username, password, role):
@@ -124,7 +126,7 @@ class User:
             break
 
         while True:
-            password = input("Password: ")
+            password = pwinput.pwinput(prompt="Password: ")
             # Validasi password ga boleh kosong.
             if password == "":
                 print("Password tidak boleh kosong.")
@@ -204,7 +206,7 @@ class User:
     @staticmethod
     def login():
         username = input("Username: ")
-        password = input("Password: ")
+        password = pwinput.pwinput(prompt="Password: ")
 
         # Cek apakah username dan password ada di user_list.
         user = next((user for user in user_list if user.username == username), None)
@@ -228,6 +230,7 @@ class User:
             print("[0] Kembali")
             print("[1] Toko / Belanja")
             print("[2] Layanan")
+            print("[3] Adopsi")
 
             choice = input("Pilihan: ")
 
@@ -266,7 +269,7 @@ class User:
             return
 
         while True:
-            new_password = input("Password baru: ")
+            new_password = pwinput.pwinput(prompt="Password baru: ")
             if new_password == "":
                 print("Password tidak boleh kosong.")
                 Utils.enter_and_continue()
