@@ -19,7 +19,11 @@ class Shop:
         print("[0] Kembali")
 
         # Print produk sesuai kategori.
-        result = [product for product in product_list if product.category == category]
+        result = [
+            product
+            for product in product_list
+            if product.category == category and product.get_stock() != 0
+        ]
 
         for i, product in enumerate(result):
             print(
@@ -125,6 +129,7 @@ class Shop:
                     continue
 
                 current_user.checkout()
+
                 print("Terima kasih telah berbelanja!")
                 Utils.enter_and_continue()
             else:
