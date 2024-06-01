@@ -4,6 +4,7 @@ import shutil
 import os
 import tkinter as tk
 from tkinter import filedialog
+from payment import Payment
 
 root = tk.Tk()
 root.withdraw()
@@ -94,6 +95,8 @@ class Pet:
                 Utils.enter_and_continue()
                 continue
 
+            price = int(price)
+
             break
 
         description = input("Deskripsi: ")
@@ -117,6 +120,18 @@ class Pet:
         print("Hewan peliharaan berhasil ditambahkan.")
 
         Pet.save_to_file()
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def read_all():
+        if len(pets) == 0:
+            print("Tidak ada hewan peliharaan yang tersedia.")
+            Utils.enter_and_continue()
+            return
+
+        for index, pet in enumerate(pets):
+            print(f"[{index + 1}] {pet.name}")
+
         Utils.enter_and_continue()
 
     @staticmethod
@@ -161,9 +176,13 @@ class Pet:
             choice = input("Pilih menu: ")
 
             if choice == "0":
-                return
+                break
             elif choice == "1":
+                Payment.select_method()
+
+                os.remove(image_path)
                 pets.remove(pet)
+
                 Pet.save_to_file()
 
                 print("Hewan peliharaan berhasil diadopsi.")
@@ -181,7 +200,7 @@ class Pet:
             file.write("nama\tusia\tspesies\tgambar\tharga\tdeskripsi\n")
             for pet in pets:
                 file.write(
-                    f"{pet.name}\t{pet.age}\t{pet.species}\t{pet.image}\t{pet.description}\n"
+                    f"{pet.name}\t{pet.age}\t{pet.species}\t{pet.image}\t{pet.price}\t{pet.description}\n"
                 )
 
     @staticmethod
@@ -192,5 +211,5 @@ class Pet:
         with open("data/pets.tsv") as file:
             for line in file.readlines()[1:]:
                 name, age, species, image, price, description = line.strip().split("\t")
-                pet = Pet(name, age, species, image, price, description)
+                pet = Pet(name, age, species, image, int(price), description)
                 pets.append(pet)

@@ -14,6 +14,7 @@ from product import Product
 from shop import Shop
 from service import Service
 from pet import Pet
+from receipt import Receipt
 
 import pwinput
 
@@ -98,6 +99,9 @@ class User:
             product.decrease_stock(amount)
 
         Product.save_to_file()
+        print("Pembelian berhasil!")
+        receipt = Receipt()
+        receipt.create_receipt(self._shopping_cart)
         self._shopping_cart = []
 
     # Buat user. Hanya input-input beserta validasinya.
@@ -306,9 +310,10 @@ class Admin(User):
             print("[3] Tambah Produk")
             print("[4] Lihat Produk")
             print("[5] Tambah Hewan Adopsi")
-            print("[6] Lihat Hewan Adopsi")
+            print("[6] Lihat Hewan yang Tersedia")
 
             choice = input("Pilihan: ")
+            Utils.clear()
 
             if choice == "0":
                 break
@@ -322,6 +327,8 @@ class Admin(User):
                 Product.list_product()
             elif choice == "5":
                 Pet.create_pet()
+            elif choice == "6":
+                Pet.read_all()
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
