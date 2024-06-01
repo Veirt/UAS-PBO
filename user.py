@@ -191,6 +191,66 @@ class User:
 
         Utils.enter_and_continue()
 
+    @staticmethod
+    def update_user():
+        if not user_list:
+            print("Tidak ada user yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar User:")
+        for i, user in enumerate(user_list):
+            print(f"[{i + 1}] {user.name} - {user.username} - {user.role}")
+
+        choice = input("Pilih nomor user yang ingin diubah (0 untuk kembali): ")
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            user = user_list[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        new_user = User.input_user(admin=True)
+        user_list[index] = new_user
+
+        print("User berhasil diubah.")
+        Utils.enter_and_continue()
+
+        User.save_to_file()
+
+    @staticmethod
+    def delete_user():
+        if not user_list:
+            print("Tidak ada user yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar User:")
+        for i, user in enumerate(user_list):
+            print(f"[{i + 1}] {user.name} - {user.username} - {user.role}")
+
+        choice = input("Pilih nomor user yang ingin dihapus (0 untuk kembali): ")
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            user = user_list.pop(index)
+            print(f"User {user.name} ({user.username}) berhasil dihapus.")
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        User.save_to_file()
+        Utils.enter_and_continue()
+
     # Simpan user ke tsv.
     @staticmethod
     def save_to_file():
@@ -306,16 +366,35 @@ class Admin(User):
             Utils.clear()
             print("Menu Admin")
             print("[0] Kembali")
-            print("[1] Tambah User")
-            print("[2] Lihat User")
-            print("[3] Tambah Produk")
-            print("[4] Lihat Produk")
-            print("[5] Tambah Hewan Adopsi")
-            print("[6] Lihat Hewan yang Tersedia")
-
+            print("[1] Manajemen User")
+            print("[2] Manajemen Produk")
+            print("[3] Manajemen Hewan Adopsi")
             choice = input("Pilihan: ")
             Utils.clear()
+            if choice == "0":
+                break
+            elif choice == "1":
+                Admin.user_management_submenu()
+            elif choice == "2":
+                Admin.product_management_submenu()
+            elif choice == "3":
+                Admin.pet_management_submenu()
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
 
+    @staticmethod
+    def user_management_submenu():
+        while True:
+            Utils.clear()
+            print("Manajemen User")
+            print("[0] Kembali")
+            print("[1] Tambah User")
+            print("[2] Lihat User")
+            print("[3] Ubah User")
+            print("[4] Hapus User")
+            choice = input("Pilihan: ")
+            Utils.clear()
             if choice == "0":
                 break
             elif choice == "1":
@@ -323,12 +402,48 @@ class Admin(User):
             elif choice == "2":
                 User.list_user()
             elif choice == "3":
-                Product.create_product()
+                User.update_user()
             elif choice == "4":
+                User.delete_user()
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
+
+    @staticmethod
+    def product_management_submenu():
+        while True:
+            Utils.clear()
+            print("Manajemen Produk")
+            print("[0] Kembali")
+            print("[1] Tambah Produk")
+            print("[2] Lihat Produk")
+            choice = input("Pilihan: ")
+            Utils.clear()
+            if choice == "0":
+                break
+            elif choice == "1":
+                Product.create_product()
+            elif choice == "2":
                 Product.list_product()
-            elif choice == "5":
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
+
+    @staticmethod
+    def pet_management_submenu():
+        while True:
+            Utils.clear()
+            print("Manajemen Hewan Adopsi")
+            print("[0] Kembali")
+            print("[1] Tambah Hewan Adopsi")
+            print("[2] Lihat Hewan yang Tersedia")
+            choice = input("Pilihan: ")
+            Utils.clear()
+            if choice == "0":
+                break
+            elif choice == "1":
                 Pet.create_pet()
-            elif choice == "6":
+            elif choice == "2":
                 Pet.read_all()
             else:
                 print("Pilihan tidak valid.")
