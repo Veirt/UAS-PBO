@@ -64,6 +64,11 @@ class Product:
 
             price = int(price)
 
+            if price == 0:
+                print("Harga produk tidak boleh 0.")
+                Utils.enter_and_continue()
+                continue
+
             break
 
         while True:

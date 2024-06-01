@@ -42,13 +42,15 @@ class Pet:
                 Utils.enter_and_continue()
                 continue
 
-            if age == "0":
-                print("Usia tidak boleh 0.")
+            if not age.isdigit():
+                print("Usia harus berupa angka.")
                 Utils.enter_and_continue()
                 continue
 
-            if not age.isdigit():
-                print("Usia harus berupa angka.")
+            age = int(age)
+
+            if age == 0:
+                print("Usia tidak boleh 0.")
                 Utils.enter_and_continue()
                 continue
 
@@ -85,11 +87,6 @@ class Pet:
                 Utils.enter_and_continue()
                 continue
 
-            if price == "0":
-                print("Harga tidak boleh 0.")
-                Utils.enter_and_continue()
-                continue
-
             if not price.isdigit():
                 print("Harga harus berupa angka.")
                 Utils.enter_and_continue()
@@ -97,9 +94,22 @@ class Pet:
 
             price = int(price)
 
+            if price == 0:
+                print("Harga tidak boleh 0.")
+                Utils.enter_and_continue()
+                continue
+
             break
 
-        description = input("Deskripsi: ")
+        while True:
+            description = input("Deskripsi: ")
+
+            if description == "":
+                print("Deskripsi tidak boleh kosong.")
+                Utils.enter_and_continue()
+                continue
+
+            break
 
         # Pindahin file nya.
         _, file_ext = os.path.splitext(os.path.basename(file_path))
@@ -141,58 +151,64 @@ class Pet:
             Utils.enter_and_continue()
             return
 
-        for index, pet in enumerate(pets):
-            print(f"[{index + 1}] {pet.name}")
-
-        choice = input("Pilih hewan peliharaan: ")
-
-        if not choice.isdigit():
-            print("Pilihan harus berupa angka.")
-            Utils.enter_and_continue()
-            return
-
-        choice = int(choice)
-
-        if choice < 1 or choice > len(pets):
-            print("Pilihan tidak valid.")
-            Utils.enter_and_continue()
-            return
-
-        pet = pets[choice - 1]
-
         while True:
-            print(f"Nama: {pet.name}")
-            print(f"Usia: {pet.age}")
-            print(f"Spesies: {pet.species}")
-            print(f"Deskripsi: {pet.description}")
-            print(f"Harga: {Utils.format_rupiah(pet.price)}")
-
-            image_path = os.path.join("images", pet.image)
-            Utils.show_image(image_path)
-
             print("[0] Kembali")
-            print("[1] Adopsi")
+            for index, pet in enumerate(pets):
+                print(f"[{index + 1}] {pet.name}")
 
-            choice = input("Pilih menu: ")
+            choice = input("Pilihan: ")
+            Utils.clear()
+
+            if not choice.isdigit():
+                print("Pilihan harus berupa angka.")
+                Utils.enter_and_continue()
+                return
 
             if choice == "0":
                 break
-            elif choice == "1":
-                Payment.select_method()
 
-                os.remove(image_path)
-                pets.remove(pet)
+            choice = int(choice)
 
-                Pet.save_to_file()
-
-                print("Hewan peliharaan berhasil diadopsi.")
-                Utils.enter_and_continue()
-            else:
+            if choice > len(pets):
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
-                continue
+                return
 
-            break
+            pet = pets[choice - 1]
+
+            while True:
+                print(f"Nama: {pet.name}")
+                print(f"Usia: {pet.age}")
+                print(f"Spesies: {pet.species}")
+                print(f"Deskripsi: {pet.description}")
+                print(f"Harga: {Utils.format_rupiah(pet.price)}")
+
+                image_path = os.path.join("images", pet.image)
+                Utils.show_image(image_path)
+
+                print("[0] Kembali")
+                print("[1] Adopsi")
+
+                choice = input("Pilih menu: ")
+                Utils.clear()
+
+                if choice == "0":
+                    break
+                elif choice == "1":
+                    Payment.select_method()
+
+                    os.remove(image_path)
+                    pets.remove(pet)
+
+                    Pet.save_to_file()
+
+                    print("Hewan peliharaan berhasil diadopsi.")
+                    Utils.enter_and_continue()
+                    return
+                else:
+                    print("Pilihan tidak valid.")
+                    Utils.enter_and_continue()
+                    continue
 
     @staticmethod
     def save_to_file():

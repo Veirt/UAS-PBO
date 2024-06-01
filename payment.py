@@ -55,7 +55,7 @@ class Payment:
         frame = Frame(root)
         frame.pack(pady=20)
 
-        pet_shop_name = Label(frame, text="Pet Shop", font=("Arial", 24))
+        pet_shop_name = Label(frame, text="Pet Shop", font=("Arial", 16))
         pet_shop_name.pack()
 
         qr_code_image = Image.open("assets/qr.png")

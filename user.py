@@ -241,6 +241,7 @@ class User:
             print("[3] Adopsi")
 
             choice = input("Pilihan: ")
+            Utils.clear()
 
             if choice == "0":
                 break
