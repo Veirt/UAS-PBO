@@ -67,6 +67,7 @@ class Pet:
             break
 
         while True:
+            print("Pilih gambar hewan peliharaan.")
             file_path = filedialog.askopenfilename(
                 title="Pilih gambar hewan peliharaan",
                 filetypes=[("Image files", "*.jpg *.jpeg *.png")],
@@ -209,6 +210,72 @@ class Pet:
                     print("Pilihan tidak valid.")
                     Utils.enter_and_continue()
                     continue
+
+    @staticmethod
+    def update_pet():
+        if not pets:
+            print("Tidak ada hewan peliharaan yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar Hewan Peliharaan:")
+        for i, pet in enumerate(pets):
+            print(f"[{i + 1}] {pet.name} - {pet.species} - {pet.age} tahun")
+
+        choice = input(
+            "Pilih nomor hewan peliharaan yang ingin diubah (0 untuk kembali): "
+        )
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            pet = pets[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        new_pet = Pet.input_pet()
+        pets[index] = new_pet
+
+        print("Hewan peliharaan berhasil diubah.")
+        Utils.enter_and_continue()
+
+        Pet.save_to_file()
+
+    @staticmethod
+    def delete_pet():
+        if not pets:
+            print("Tidak ada hewan peliharaan yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar Hewan Peliharaan:")
+        for i, pet in enumerate(pets):
+            print(f"[{i + 1}] {pet.name} - {pet.species} - {pet.age} tahun")
+
+        choice = input(
+            "Pilih nomor hewan peliharaan yang ingin dihapus (0 untuk kembali): "
+        )
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            pet = pets.pop(index)
+            os.remove(os.path.join("images", pet.image))
+
+            print(f"Hewan peliharaan {pet.name} berhasil dihapus.")
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        Pet.save_to_file()
+        Utils.enter_and_continue()
 
     @staticmethod
     def save_to_file():

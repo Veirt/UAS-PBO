@@ -446,6 +446,8 @@ class Admin(User):
             print("[0] Kembali")
             print("[1] Tambah Hewan Adopsi")
             print("[2] Lihat Hewan yang Tersedia")
+            print("[3] Ubah Hewan Adopsi")
+            print("[4] Hapus Hewan Adopsi")
             choice = input("Pilihan: ")
             Utils.clear()
             if choice == "0":
@@ -454,6 +456,10 @@ class Admin(User):
                 Pet.create_pet()
             elif choice == "2":
                 Pet.read_all()
+            elif choice == "3":
+                Pet.update_pet()
+            elif choice == "4":
+                Pet.delete_pet()
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
