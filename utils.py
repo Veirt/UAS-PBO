@@ -49,3 +49,11 @@ class Utils:
         root.protocol("WM_DELETE_WINDOW", on_closing)
 
         root.mainloop()
+
+    @staticmethod
+    def find_user(user_list, username):
+        for user in user_list:
+            if user.username == username:
+                return user
+
+        return None

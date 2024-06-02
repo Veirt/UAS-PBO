@@ -10,7 +10,9 @@ class Payment:
             print("Pilih metode pembayaran:")
             print("[1] Transfer")
             print("[2] QRIS")
+
             choice = input("Pilihan: ")
+            Utils.clear()
 
             if choice == "":
                 print("Pilihan tidak boleh kosong.")

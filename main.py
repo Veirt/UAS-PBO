@@ -6,6 +6,7 @@ Penyimpanan eksternal: TSV (Tab Separated Values)
 Mirip dengan CSV, tapi menggunakan tab sebagai pemisah. Memudahkan karena nama produk mungkin ada yang punya koma.
 """
 
+from service import HealthCheck, PetCare
 from utils import Utils
 from user import User, Admin, Doctor
 from pet import Pet
@@ -16,6 +17,8 @@ current_user: User | None = None
 Product.load_from_file()
 User.load_from_file()
 Pet.load_from_file()
+HealthCheck.load_from_file()
+PetCare.load_from_file()
 
 while True:
     print("Selamat datang di Pet Shop!")

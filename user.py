@@ -12,7 +12,7 @@ from payment import Payment
 from utils import Utils
 from product import Product
 from shop import Shop
-from service import Service
+from service import PetCare, Service, HealthCheck, pet_care_queue, health_check_list
 from pet import Pet
 from receipt import Receipt
 
@@ -101,7 +101,7 @@ class User:
         Product.save_to_file()
         print("Pembelian berhasil!")
         receipt = Receipt()
-        receipt.create_receipt(self._shopping_cart)
+        receipt.create_shop_receipt(self._shopping_cart)
         self._shopping_cart = []
 
     # Buat user. Hanya input-input beserta validasinya.
@@ -369,8 +369,10 @@ class Admin(User):
             print("[1] Manajemen User")
             print("[2] Manajemen Produk")
             print("[3] Manajemen Hewan Adopsi")
+
             choice = input("Pilihan: ")
             Utils.clear()
+
             if choice == "0":
                 break
             elif choice == "1":
@@ -475,17 +477,171 @@ class Doctor(User):
             Utils.clear()
             print("Menu Dokter")
             print("[0] Kembali")
-            print("[1] Lihat User")
-            print("[2] Lihat Produk")
+            print("[1] Lihat Antrean Kesehatan")
+            print("[2] Lihat Antrean Perawatan")
+            print("[3] Proses Antrean Kesehatan")
+            print("[4] Proses Antrean Perawatan")
 
             choice = input("Pilihan: ")
+            Utils.clear()
 
             if choice == "0":
                 break
             elif choice == "1":
-                User.list_user()
+                Doctor.view_health_check_queue()
             elif choice == "2":
-                Product.list_product()
+                Doctor.view_pet_care_queue()
+            elif choice == "3":
+                Doctor.process_health_check_queue()
+            elif choice == "4":
+                Doctor.process_pet_care_queue()
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
+
+    @staticmethod
+    def view_health_check_queue():
+        current_queue = [item for item in health_check_list if item.status == "Waiting"]
+        if not current_queue:
+            print("Antrean kesehatan kosong.")
+            Utils.enter_and_continue()
+            return
+
+        print("Antrean Pengecekan Kesehatan:")
+        for item in current_queue:
+            print(f"* {str(item)}")
+
+        print()
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def view_pet_care_queue():
+        current_queue = [item for item in pet_care_queue if item.status == "Waiting"]
+        if not current_queue:
+            print("Antrean perawatan kosong.")
+            Utils.enter_and_continue()
+            return
+
+        print("Antrean Perawatan Hewan:")
+        for item in current_queue:
+            print(f"* {str(item)}")
+
+        print()
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def process_health_check_queue():
+        current_queue = [item for item in health_check_list if item.status == "Waiting"]
+        if not current_queue:
+            print("Tidak ada antrean pengecekan kesehatan hewan yang menunggu.")
+            Utils.enter_and_continue()
+            return
+
+        print("Antrean Pengecekan Kesehatan Hewan:")
+        for i, item in enumerate(current_queue, start=1):
+            print(f"[{i}] {str(item)}")
+
+        print()
+        choice = input("Pilih nomor antrean untuk diproses (0 untuk kembali): ")
+        Utils.clear()
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            item = health_check_list[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        while True:
+            pet_type = input(f"Masukkan jenis hewan: ")
+
+            if pet_type == "":
+                print("Jenis hewan tidak boleh kosong.")
+                Utils.enter_and_continue()
+                continue
+
+            break
+
+        while True:
+            disease = input("Masukkan penyakit: ")
+
+            if disease == "":
+                print("Penyakit tidak boleh kosong.")
+                Utils.enter_and_continue()
+                continue
+
+            break
+
+        while True:
+            medicine = input("Masukkan obat yang dibutuhkan: ")
+
+            if medicine == "":
+                print("Obat tidak boleh kosong.")
+                Utils.enter_and_continue()
+                continue
+
+            break
+
+        while True:
+            price = input("Masukkan harga: ")
+
+            if price == "":
+                print("Harga tidak boleh kosong.")
+                Utils.enter_and_continue()
+                continue
+
+            if not price.isdigit():
+                print("Harga harus berupa angka.")
+                Utils.enter_and_continue()
+                continue
+
+            price = int(price)
+
+            break
+
+        item.pet_type = pet_type
+        item.disease = disease
+        item.medicine = medicine
+        item.price = price
+        item.status = "Done"
+
+        HealthCheck.save_to_file()
+
+        print("Pengecekan kesehatan selesai.")
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def process_pet_care_queue():
+        current_queue = [item for item in pet_care_queue if item.status == "Waiting"]
+        if not current_queue:
+            print("Antrean perawatan kosong.")
+            Utils.enter_and_continue()
+            return
+
+        print("Antrean Perawatan Hewan:")
+        for i, item in enumerate(current_queue, start=1):
+            print(f"[{i}] {str(item)}")
+
+        choice = input("Pilih nomor antrean untuk diproses (0 untuk kembali): ")
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            item = pet_care_queue[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        item.status = "Done"
+        print(f"Perawatan {item.package} untuk {item.pet_type} selesai.")
+
+        PetCare.save_to_file()
+        Utils.enter_and_continue()
 
 
 user_list: List[User] = []
