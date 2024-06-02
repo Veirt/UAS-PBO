@@ -76,6 +76,9 @@ class PetCare:
         self.user = user
         self.pet_type = pet_type
         self.package = package
+        # Status: bisa Waiting, Done
+        # Waiting: sedang menunggu dokter memproses
+        # Done: sudah selesai diproses dokter
         self.status = "Waiting"
         self.price = price
 
@@ -330,6 +333,68 @@ class Service:
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
+
+    @staticmethod
+    def view_all_health_check_history():
+        Utils.clear()
+        completed_items = [item for item in health_check_list if item.status == "Paid"]
+
+        if not completed_items:
+            print("Tidak ada pengecekan kesehatan hewan yang telah selesai dibayar.")
+            Utils.enter_and_continue()
+            return
+
+        for i, item in enumerate(completed_items, start=1):
+            print(f"[{i}] {str(item)}")
+
+        choice = input("Pilih nomor untuk mencetak kembali struk (0 untuk kembali): ")
+        Utils.clear()
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            selected_item = completed_items[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        receipt = Receipt()
+        receipt.create_health_check_receipt(selected_item)
+        print("Struk berhasil dicetak.")
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def view_all_pet_care_history():
+        Utils.clear()
+        completed_items = [item for item in pet_care_queue if item.status == "Done"]
+
+        if not completed_items:
+            print("Tidak ada perawatan hewan yang telah selesai")
+            Utils.enter_and_continue()
+            return
+
+        for i, item in enumerate(completed_items, start=1):
+            print(f"[{i}] {str(item)}")
+
+        choice = input("Pilih nomor untuk mencetak kembali struk (0 untuk kembali): ")
+        Utils.clear()
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            selected_item = completed_items[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        receipt = Receipt()
+        receipt.create_pet_care_receipt(selected_item)
+        print("Struk berhasil dicetak.")
+        Utils.enter_and_continue()
 
     @staticmethod
     def menu(current_user):

@@ -310,7 +310,7 @@ class User:
             elif choice == "2":
                 Service.menu(current_user)
             elif choice == "3":
-                Pet.adoption_menu(current_user)
+                Pet.adoption_menu()
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
@@ -369,6 +369,7 @@ class Admin(User):
             print("[1] Manajemen User")
             print("[2] Manajemen Produk")
             print("[3] Manajemen Hewan Adopsi")
+            print("[4] Riwayat Layanan")
 
             choice = input("Pilihan: ")
             Utils.clear()
@@ -381,6 +382,8 @@ class Admin(User):
                 Admin.product_management_submenu()
             elif choice == "3":
                 Admin.pet_management_submenu()
+            elif choice == "4":
+                Admin.service_history_submenu()
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()
@@ -462,6 +465,28 @@ class Admin(User):
                 Pet.update_pet()
             elif choice == "4":
                 Pet.delete_pet()
+            else:
+                print("Pilihan tidak valid.")
+                Utils.enter_and_continue()
+
+    @staticmethod
+    def service_history_submenu():
+        while True:
+            Utils.clear()
+            print("Riwayat Layanan")
+            print("[0] Kembali")
+            print("[1] Riwayat Pengecekan Kesehatan Hewan")
+            print("[2] Riwayat Perawatan Hewan")
+
+            choice = input("Pilihan: ")
+            Utils.clear()
+
+            if choice == "0":
+                break
+            elif choice == "1":
+                Service.view_all_health_check_history()
+            elif choice == "2":
+                Service.view_all_pet_care_history()
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()

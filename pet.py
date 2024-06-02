@@ -146,7 +146,7 @@ class Pet:
         Utils.enter_and_continue()
 
     @staticmethod
-    def adoption_menu(current_user):
+    def adoption_menu():
         if len(pets) == 0:
             print("Belum ada hewan peliharaan.")
             Utils.enter_and_continue()
