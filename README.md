@@ -1,3 +1,9 @@
+# Cara Run
+
+1. Buka VSCode di folder ini
+2. pip install -r requirements.txt
+3. Buka main.py, run disitu
+
 # Penjelasan
 
 1. Admin
