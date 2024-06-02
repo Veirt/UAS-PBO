@@ -417,6 +417,9 @@ class Admin(User):
             print("[0] Kembali")
             print("[1] Tambah Produk")
             print("[2] Lihat Produk")
+            print("[3] Ubah Produk")
+            print("[4] Hapus Produk")
+            print("[5] Ubah Stok Produk")
             choice = input("Pilihan: ")
             Utils.clear()
             if choice == "0":
@@ -425,6 +428,12 @@ class Admin(User):
                 Product.create_product()
             elif choice == "2":
                 Product.list_product()
+            elif choice == "3":
+                Product.update_product()
+            elif choice == "4":
+                Product.delete_product()
+            elif choice == "5":
+                Product.change_stock()
             else:
                 print("Pilihan tidak valid.")
                 Utils.enter_and_continue()

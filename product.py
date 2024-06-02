@@ -34,6 +34,7 @@ class Product:
             return False
 
         self._stock = amount
+        return True
 
     # Buat produknya. Hanya input-input beserta validasinya.
     @staticmethod
@@ -131,6 +132,114 @@ class Product:
                 f"{i + 1}. {product.name} - {product.get_price_formatted()} - {product.get_stock()} - {product.category}"
             )
 
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def update_product():
+        if not product_list:
+            print("Tidak ada produk yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar Produk:")
+        for i, product in enumerate(product_list):
+            print(
+                f"[{i + 1}] {product.name} - {product.get_price_formatted()} - {product.get_stock()} - {product.category}"
+            )
+
+        choice = input("Pilih nomor produk yang ingin diubah (0 untuk kembali): ")
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            product = product_list[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        new_product = Product.input_product()
+        product_list[index] = new_product
+
+        print("Produk berhasil diubah.")
+        Utils.enter_and_continue()
+
+        Product.save_to_file()
+
+    @staticmethod
+    def delete_product():
+        if not product_list:
+            print("Tidak ada produk yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar Produk:")
+        for i, product in enumerate(product_list):
+            print(
+                f"[{i + 1}] {product.name} - {product.get_price_formatted()} - {product.get_stock()} - {product.category}"
+            )
+
+        choice = input("Pilih nomor produk yang ingin dihapus (0 untuk kembali): ")
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            product = product_list.pop(index)
+            print(f"Produk {product.name} berhasil dihapus.")
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        Product.save_to_file()
+        Utils.enter_and_continue()
+
+    @staticmethod
+    def change_stock():
+        if not product_list:
+            print("Tidak ada produk yang terdaftar.")
+            Utils.enter_and_continue()
+            return
+
+        print("Daftar Produk:")
+        for i, product in enumerate(product_list):
+            print(
+                f"[{i + 1}] {product.name} - {product.get_price_formatted()} - {product.get_stock()} - {product.category}"
+            )
+
+        choice = input(
+            "Pilih nomor produk yang ingin diubah stoknya (0 untuk kembali): "
+        )
+
+        if choice == "0":
+            return
+
+        try:
+            index = int(choice) - 1
+            product = product_list[index]
+        except (ValueError, IndexError):
+            print("Pilihan tidak valid.")
+            Utils.enter_and_continue()
+            return
+
+        while True:
+            stock = input(f"Masukkan stok baru untuk {product.name}: ")
+
+            if not stock.isdigit():
+                print("Stok harus angka yang valid.")
+                Utils.enter_and_continue()
+                continue
+
+            stock = int(stock)
+            if product.set_stock(stock):
+                print("Stok berhasil diubah.")
+                break
+
+        Product.save_to_file()
         Utils.enter_and_continue()
 
     # Simpan produk dari tsv.
