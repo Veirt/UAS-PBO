@@ -5,6 +5,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 from payment import Payment
+from receipt import Receipt
 
 root = tk.Tk()
 root.withdraw()
@@ -202,6 +203,9 @@ class Pet:
                     pets.remove(pet)
 
                     Pet.save_to_file()
+
+                    receipt = Receipt()
+                    receipt.create_adoption_receipt(pet)
 
                     print("Hewan peliharaan berhasil diadopsi.")
                     Utils.enter_and_continue()

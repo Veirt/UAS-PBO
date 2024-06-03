@@ -45,6 +45,15 @@ class Receipt:
         receipt += f"\nTotal: {Utils.format_rupiah(total)}"
         self.create_receipt("Receipt", receipt)
 
+    def create_adoption_receipt(self, item):
+        receipt = ""
+        receipt += f"Nama Hewan: {item.name}\n"
+        receipt += f"Jenis Hewan: {item.species}\n"
+        receipt += f"Umur Hewan: {item.age}\n"
+        receipt += f"Deskripsi: {item.description}\n"
+        receipt += f"Biaya Adopsi: {Utils.format_rupiah(item.price)}\n"
+        self.create_receipt("Adoption Receipt", receipt)
+
     def create_health_check_receipt(self, item):
         receipt = f"Pemilik: {item.user.name}\n"
         receipt += f"Jenis Hewan: {item.pet_type}\n"
