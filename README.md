@@ -2,7 +2,7 @@
 
 1. Buka VSCode di folder ini
 2. pip install -r requirements.txt
-3. Buka main.py, run disitu
+3. Buka main.py, lalu run program tersebut
 
 # Penjelasan
 
