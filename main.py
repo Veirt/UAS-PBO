@@ -21,7 +21,7 @@ HealthCheck.load_from_file()
 PetCare.load_from_file()
 
 while True:
-    print("Selamat datang di Pet Shop!")
+    print("Selamat datang di Kocham Cie Pet Shop!")
     print("[0] Keluar dari aplikasi")
     print("[1] Login")
     print("[2] Daftar")
